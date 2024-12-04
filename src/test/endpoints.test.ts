@@ -6,6 +6,7 @@ import { initSequelize } from '../database/sequelize-instance-manager';
 import { initializeModels } from '../models';
 import * as http from 'http';
 import { Sequelize } from 'sequelize-typescript';
+import { destroy, setup } from './database-test';
 
 let app: Express;
 let sequelize: Sequelize;
@@ -13,9 +14,7 @@ let server: http.Server;
 
 describe('Endpoints', () => {
   beforeAll(async () => {
-    sequelize = await initSequelize('test');
-    initializeModels(sequelize);
-    await sequelize.sync({ force: true }); // Force sync for a clean state
+    sequelize = await setup();
     app = buildApplication(logger);
     server = await app.listen(process.env.PORT || 3002);
   });
