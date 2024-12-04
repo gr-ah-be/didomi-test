@@ -55,7 +55,6 @@ class UserController {
 
       return res.status(200).json(user);
     } catch (error) {
-      console.error(error);
       if (error instanceof ValidationError) {
         return res.status(404).json({ message: error.message });
       }

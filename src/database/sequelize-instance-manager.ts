@@ -1,4 +1,3 @@
-
 /* istanbul ignore file */
 import { Sequelize } from 'sequelize-typescript';
 
@@ -45,7 +44,6 @@ export const initSequelize = async (
 export const closeAllInstances = async () => {
   for (const [env, sequelize] of Object.entries(instances)) {
     await sequelize.close();
-    console.log(`Sequelize instance for ${env} closed.`);
     delete instances[env]; // Remove from cache
   }
 };
