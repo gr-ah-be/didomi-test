@@ -1,0 +1,61 @@
+version: '4.0'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: development
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: didomi_dev
+      DB_USERNAME: didomi_user
+      DB_PASSWORD: didomi_pwd
+      PORT: 3000
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: on-failure
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  db:
+    image: postgres:14
+    restart: on-failure
+    environment:
+      POSTGRES_DB: didomi_dev
+      POSTGRES_USER: didomi_user
+      POSTGRES_PASSWORD: didomi_pwd
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  test-db:
+    image: postgres:14
+    restart: on-failure
+    environment:
+      POSTGRES_DB: didomi_test # Default database for test setup
+      POSTGRES_USER: didomi_user
+      POSTGRES_PASSWORD: didomi_pwd
+    ports:
+      - '5433:5432' # Different port for the test DB
+    volumes:
+      - test_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'didomi_user', '-d', 'didomi_test']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  pgdata:
+  test_pgdata:
