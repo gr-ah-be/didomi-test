@@ -24,7 +24,7 @@ export const initSequelize = async (
     sequelize = new Sequelize({
       dialect: 'postgres',
       host: process.env.DB_HOST || 'localhost',
-      port: 5433,
+      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5433,
       username: process.env.DB_USERNAME || 'didomi_user',
       password: process.env.DB_PASSWORD || 'didomi_pwd',
       database: 'didomi_test',
