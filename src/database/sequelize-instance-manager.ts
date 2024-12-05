@@ -1,4 +1,3 @@
-
 /* istanbul ignore file */
 import { Sequelize } from 'sequelize-typescript';
 
@@ -25,7 +24,7 @@ export const initSequelize = async (
     sequelize = new Sequelize({
       dialect: 'postgres',
       host: process.env.DB_HOST || 'localhost',
-      port: 5433,
+      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5433,
       username: process.env.DB_USERNAME || 'didomi_user',
       password: process.env.DB_PASSWORD || 'didomi_pwd',
       database: 'didomi_test',
@@ -45,7 +44,6 @@ export const initSequelize = async (
 export const closeAllInstances = async () => {
   for (const [env, sequelize] of Object.entries(instances)) {
     await sequelize.close();
-    console.log(`Sequelize instance for ${env} closed.`);
     delete instances[env]; // Remove from cache
   }
 };

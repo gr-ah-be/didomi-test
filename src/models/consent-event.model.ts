@@ -70,13 +70,10 @@ interface ConsentChangeEventAttributes {
   updatedAt?: Date;
 }
 
-interface ConsentChangeEventCreationAttributes
-  extends Optional<ConsentChangeEventAttributes, 'id'> {}
-
 class ConsentChangeEvent
   extends Model<
     ConsentChangeEventAttributes,
-    ConsentChangeEventCreationAttributes
+    Optional<ConsentChangeEventAttributes, 'id'>
   >
   implements ConsentChangeEventAttributes
 {
