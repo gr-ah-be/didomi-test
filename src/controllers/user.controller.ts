@@ -19,7 +19,9 @@ class UserController {
     } catch (error) {
       logger.error(error, 'Error creating user');
       if (error instanceof DatabaseError) {
-        return res.status(422).json({ message: error.message, errors: error.errors });
+        return res
+          .status(422)
+          .json({ message: error.message, errors: error.errors });
       }
       next(error);
     }
