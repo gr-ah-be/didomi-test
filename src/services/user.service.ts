@@ -13,15 +13,10 @@ class UserService {
    */
   async createUser(email: string) {
     try {
-      const existingUser = await UserRepository.findUserByEmail(email);
-      if (existingUser) {
-        throw new ValidationError('Email already in use.');
-      }
-
       return await UserRepository.createUser(email);
     } catch (error) {
       if (error instanceof UniqueConstraintError) {
-        throw new DatabaseError('Duplicate email', 422, [
+        throw new DatabaseError(error.message, 422, [
           {
             field: 'email',
             value: email,

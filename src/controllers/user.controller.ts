@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import UserService from '../services/user.service';
 import { ValidationError } from '../errors';
 import { logger } from '../config/logger';
+import { DatabaseError } from '../errors';
 
 class UserController {
   /**
@@ -17,8 +18,8 @@ class UserController {
       return res.status(201).json(user);
     } catch (error) {
       logger.error(error, 'Error creating user');
-      if (error instanceof ValidationError) {
-        return res.status(422).json({ message: error.message });
+      if (error instanceof DatabaseError) {
+        return res.status(422).json({ message: error.message, errors: error.errors });
       }
       next(error);
     }
