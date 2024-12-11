@@ -1,3 +1,4 @@
+import { Sequelize } from 'sequelize';
 import { ConsentChangeEvent, User } from '../models';
 
 class UserRepository {
@@ -6,8 +7,15 @@ class UserRepository {
    * @param email The email of the user
    * @returns The created user
    */
-  async createUser(email: string): Promise<User> {
-    return User.create({ email });
+  async createUser(
+    email: string,
+  ): Promise<Pick<User, 'id' | 'email'> & { consents: ConsentChangeEvent[] }> {
+    const createdUser = await User.create({ email });
+    return {
+      id: createdUser.id,
+      email: createdUser.email,
+      consents: [],
+    };
   }
 
   /**
@@ -17,7 +25,10 @@ class UserRepository {
    * @returns The user with the given ID if found, otherwise null
    */
   async findUserById(id: number, attributes?: string[]): Promise<User | null> {
-    const options: { where: { id: number }; include?: any[] } = {
+    const options: {
+      where: { id: number };
+      include?: Record<string, unknown>[];
+    } = {
       where: { id },
     };
     if (attributes && attributes.length > 0) {
@@ -26,6 +37,15 @@ class UserRepository {
           model: ConsentChangeEvent,
           as: 'events',
           attributes,
+          separate: true,
+          where: Sequelize.literal(`
+            "ConsentChangeEvent"."id" IN (
+              SELECT MAX("id") 
+              FROM "consent_change_events" 
+              WHERE "userId" = ${id} 
+              GROUP BY "consentId"
+            )
+          `),
         },
       ];
     }
